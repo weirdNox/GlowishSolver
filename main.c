@@ -29,15 +29,14 @@ int main(int argc, char *argv[])
     // NOTE(nox): Using ideas from https://www.math.ksu.edu/math551/math551a.f06/lights_out.pdf
 
     // NOTE(nox): Puzzle Example
-    int numberOfRows = 5;
-    int numberOfColumns = 5;
+    int numberOfRows = 4;
+    int numberOfColumns = 3;
     int numberOfTiles = numberOfRows*numberOfColumns;
     Tile tiles[] = {
-        {Shape_Triangle, Color_Yellow}, {Shape_Square, Color_Yellow}, {Shape_Triangle, Color_Pink}, {Shape_Circle, Color_Pink}, {Shape_Triangle, Color_Blue},
-        {Shape_Circle, Color_Orange}, {Shape_Circle, Color_Blue}, {Shape_Triangle, Color_Orange}, {Shape_Circle, Color_Blue}, {Shape_Square, Color_Red},
-        {Shape_Triangle, Color_Pink}, {Shape_Circle, Color_Yellow}, {Shape_Triangle, Color_Yellow}, {Shape_Triangle, Color_Green}, {Shape_Triangle, Color_Orange},
-        {Shape_Triangle, Color_Red}, {Shape_Circle, Color_Orange}, {Shape_Square, Color_Green}, {Shape_Circle, Color_Red}, {Shape_Circle, Color_Orange},
-        {Shape_Circle, Color_Yellow}, {Shape_Triangle, Color_Yellow}, {Shape_Circle, Color_Pink}, {Shape_Square, Color_Green}, {Shape_Circle, Color_Pink},
+        {Shape_Square, Color_Blue}, {Shape_Circle, Color_Pink}, {Shape_Square, Color_Pink},
+        {Shape_Square, Color_Yellow}, {Shape_Triangle, Color_Orange}, {Shape_Square, Color_Pink},
+        {Shape_Triangle, Color_Red}, {Shape_Triangle, Color_Yellow}, {Shape_Triangle, Color_Red},
+        {Shape_Triangle, Color_Green}, {Shape_Square, Color_Green}, {Shape_Circle, Color_Green},
     };
 
     char *matrixA = calloc(sizeof(*matrixA), numberOfTiles*numberOfTiles);
@@ -50,7 +49,7 @@ int main(int argc, char *argv[])
             ++testTile)
         {
             matrixA[unknown*numberOfTiles + testTile] = (tiles[unknown].shape == tiles[testTile].shape ||
-                                                           tiles[unknown].color == tiles[testTile].color);
+                                                         tiles[unknown].color == tiles[testTile].color);
         }
     }
 
@@ -108,28 +107,28 @@ int main(int argc, char *argv[])
     }
 
     for(int diagonal = numberOfTiles - 1;
-            diagonal > 0;
-            --diagonal)
+        diagonal > 0;
+        --diagonal)
+    {
+        if(matrixA[diagonal*numberOfTiles + diagonal])
         {
-            if(matrixA[diagonal*numberOfTiles + diagonal])
+            for(int i = diagonal - 1;
+                i >= 0;
+                --i)
             {
-                for(int i = diagonal - 1;
-                    i >= 0;
-                    --i)
+                if(matrixA[i*numberOfTiles + diagonal])
                 {
-                    if(matrixA[i*numberOfTiles + diagonal])
+                    for(int j = diagonal;
+                        j < numberOfTiles;
+                        ++j)
                     {
-                        for(int j = diagonal;
-                            j < numberOfTiles;
-                            ++j)
-                        {
-                            matrixA[i*numberOfTiles + j] ^= matrixA[diagonal*numberOfTiles + j];
-                        }
-                        matrixB[i] ^= matrixB[diagonal];
+                        matrixA[i*numberOfTiles + j] ^= matrixA[diagonal*numberOfTiles + j];
                     }
+                    matrixB[i] ^= matrixB[diagonal];
                 }
             }
         }
+    }
 
     puts("Matrix result:");
     for(int i = 0;
@@ -155,7 +154,7 @@ int main(int argc, char *argv[])
             j < numberOfColumns;
             ++j)
         {
-            printf(" %c |", matrixB[i*numberOfRows + j] ? 'X' : ' ');
+            printf(" %c |", matrixB[i*numberOfColumns + j] ? 'X' : ' ');
         }
         puts("");
     }
